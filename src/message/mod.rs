@@ -6,8 +6,7 @@ mod message_mgmt;
 pub use message_mgmt::*;
 use crate::my_system::*;
 use crate::matrix::*;
-use curl::easy::Easy;
-use std::io::{stdout, Write};
+use curl::easy::{Easy2, Handler, WriteError};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////  Structure et traits des messages reçus
@@ -19,6 +18,15 @@ pub struct Message{
     pub sender_id: String,
     pub sender_name: String,
     pub m_message: String,
+}
+
+struct Collector(Vec<u8>);
+
+impl Handler for Collector {
+    fn write(&mut self, data: &[u8]) -> Result<usize, WriteError> {
+        self.0.extend_from_slice(data);
+        Ok(data.len())
+    }
 }
 
 // _traits de Message
@@ -90,14 +98,12 @@ impl Message{
                     };
                 chat_to_alert_admincore
             } else if botbot_phrase.contains("blague") {
-                let mut easy = Easy::new();
-                easy.url("https://v2.jokeapi.dev/joke/Any?lang=fr&format=txt").unwrap();
-                easy.write_function(|data| {
-                    stdout().write_all(data).unwrap();
-                    Ok(data.len())
-                }).unwrap();
+                let mut easy = Easy2::new(Collector(Vec::new()));
+                easy.get(true).unwrap();
+                easy.url("https://v2.jokeapi.dev/joke/Programming?blacklistFlags=racist&format=txt").unwrap();
                 easy.perform().unwrap();
-                let chat_to_jockes = Ok(format!("{}",easy.response_code().unwrap()));
+                let contents = easy.get_ref();
+                let chat_to_jockes = Ok(format!("{}",String::from_utf8_lossy(&contents.0)));
                 chat_to_jockes
             } else {
                 // _réponse de botbot
