@@ -6,6 +6,8 @@ mod message_mgmt;
 pub use message_mgmt::*;
 use crate::my_system::*;
 use crate::matrix::*;
+use curl::easy::Easy;
+use std::io::{stdout, Write};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////  Structure et traits des messages reçus
@@ -87,6 +89,16 @@ impl Message{
                         Err(e) => return Err(format!("ERROR: unable to get admincore list {}", e)),
                     };
                 chat_to_alert_admincore
+            } else if botbot_phrase.contains("blague") {
+                let mut easy = Easy::new();
+                easy.url("https://v2.jokeapi.dev/joke/Any?lang=fr&format=txt").unwrap();
+                easy.write_function(|data| {
+                    stdout().write_all(data).unwrap();
+                    Ok(data.len())
+                }).unwrap();
+                easy.perform().unwrap();
+                let chat_to_jockes = Ok(format!("{}",easy.response_code().unwrap()));
+                chat_to_jockes
             } else {
                 // _réponse de botbot
                 let chat_answer =
