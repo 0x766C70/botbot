@@ -36,6 +36,7 @@ impl Message{
         let mut botbot_phrase = String::from(unidecode(&self.m_message).to_string());
         // _uppercases
         botbot_phrase.make_ascii_lowercase();
+        println!("{}", &self.sender_id);
         let answer =
             if botbot_phrase.contains("botbot admin") && adminsys_list.contains(&self.sender_id){
                 let admin_answer =
