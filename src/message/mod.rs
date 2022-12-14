@@ -65,7 +65,7 @@ impl Message{
                             };
                         chat_to_space_left
                     } else if botbot_phrase.contains("admin annonce") {
-                        &self.change_room("!JHyLuasLCpiDxIlcks:matrix.fdn.fr".to_string(), "fdn".to_string());
+                        &self.change_room("!IVhsVGlnEjiLZiiDkl:matrix.fdn.fr".to_string(), "fdn".to_string());
                         let chat_to_all= Ok(format!("ANNONCE: {}", &self.m_message));
                         chat_to_all
                     } else {
