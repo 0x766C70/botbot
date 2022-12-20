@@ -12,13 +12,6 @@ use crate::botbot_actions::*;
 mod my_system;
 
 /// EXTERNAL CRATES
-// extern crate cron;
-// use cron::Schedule;
-// use chrono::DateTime;
-// use chrono::prelude::*;
-// use std::str::FromStr;
-// use std::thread;
-// use std::time::Duration;
 use std::io::{BufRead, BufReader};
 use procfs::process::Process;
 use regex::Regex;
@@ -32,9 +25,6 @@ const MATRIX_DRIVE: &str = "/dev/vdb";
 ////////////////////////  FONCTION principale
 
 fn main() {
-
-    // let expression = "0   *   *   *   *   *   *";
-    // let schedule = Schedule::from_str(expression).unwrap();
 
     println!("///// botbot v2.1 by lovely fdn team");
 

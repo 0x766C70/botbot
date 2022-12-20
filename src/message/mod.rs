@@ -65,7 +65,7 @@ impl Message{
                             };
                         chat_to_space_left
                     } else if botbot_phrase.contains("admin annonce") {
-                        &self.change_room("!IVhsVGlnEjiLZiiDkl:matrix.fdn.fr".to_string(), "fdn".to_string());
+                        let _ = &self.change_room("!IVhsVGlnEjiLZiiDkl:matrix.fdn.fr".to_string(), "fdn".to_string());
                         let chat_to_all= Ok(format!("ANNONCE: {}", &self.m_message));
                         chat_to_all
                     } else {
@@ -91,7 +91,7 @@ impl Message{
             // _envoie une alerte sur #adminsys
             } else if botbot_phrase.contains("!alert") || botbot_phrase.contains("!alerte") {
                 // _on change le message pour que la réponse parte sur le chan adminsys
-                &self.change_room("!sjkTrbbOksVnLWuzlc:matrix.fdn.fr".to_string(), "fdn-adminsys".to_string());
+                let _ = &self.change_room("!sjkTrbbOksVnLWuzlc:matrix.fdn.fr".to_string(), "fdn-adminsys".to_string());
                 let chat_to_alert_admincore=
                     match get_admin_list(&self.sender_name, admincore_list) {
                         Ok(chat_to_ping_admincore_ctrl) => Ok(format!("ALERTE remontée par {} ! {}", &self.sender_name, chat_to_ping_admincore_ctrl)),
