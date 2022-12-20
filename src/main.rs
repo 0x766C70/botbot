@@ -24,9 +24,9 @@ use procfs::process::Process;
 use regex::Regex;
 
 // CONSTANTS
-const MATRIX_FOLDER: &str = "/home/vlp/tools_git/matrix-commander/matrix-commander.py";
-const MATRIX_CREDITENTIALS: &str = "-c/home/vlp/tools_git//matrix-commander/credentials.json";
-const MATRIX_DB_FOLDER: &str = "-s/home/vlp/tools_git/matrix-commander/store/";
+const MATRIX_FOLDER: &str = "/srv/bot/my_py3.8_env/my_app_venv/lib/python3.8/site-packages/matrix_commander/matrix_commander.py";
+const MATRIX_CREDITENTIALS: &str = "-c/srv/bot/my_py3.8_env/my_app_venv/lib/python3.8/site-packages/matrix_commander/credentials.json";
+const MATRIX_DB_FOLDER: &str = "-s/srv/bot/my_py3.8_env/my_app_venv/lib/python3.8/site-packages/matrix_commander/store/";
 const MATRIX_DRIVE: &str = "/dev/vdb";
 ////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////  FONCTION principale
