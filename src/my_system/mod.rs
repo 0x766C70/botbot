@@ -3,6 +3,29 @@ use regex::Regex;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////  FONCTION de monitoring
+pub fn chat_gpt_answer(botbot_phrase: String) -> Result<String, String>{
+   let aichat_command = Command::new("aichat")
+       .arg("-r")
+       .arg("bar")
+       .arg(botbot_phrase)
+       .output()
+       .expect("failed to execute process");
+
+    let aichat_answer = String::from_utf8_lossy(&aichat_command.stdout);
+    Ok(aichat_answer.to_string())
+}
+
+pub fn tech_deb_answer(botbot_phrase: String) -> Result<String, String>{
+   let aichat_command = Command::new("aichat")
+       .arg("-r")
+       .arg("tech")
+       .arg(botbot_phrase)
+       .output()
+       .expect("failed to execute process");
+
+    let aichat_answer = String::from_utf8_lossy(&aichat_command.stdout);
+    Ok(aichat_answer.to_string())
+}
 
 // _retourn l'espace utilisé du disk passé en argument
 pub fn monit_disk_space(disk: String) -> Result<i32, String> {

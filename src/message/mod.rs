@@ -35,10 +35,24 @@ impl Message{
     pub fn thinking(&mut self, adminsys_list: &Vec<String>, admincore_list: &Vec<String>, trigger_word_list: &mut Vec<String>, connection_db: &Connection) -> Result<String, String> {
         let mut botbot_phrase = String::from(unidecode(&self.m_message).to_string());
         // _uppercases
-        botbot_phrase.make_ascii_lowercase();
-        println!("{}", &self.sender_id);
+        //botbot_phrase.make_ascii_lowercase();
+        println!("{}: {}", &self.sender_id, botbot_phrase);
         let answer =
-            if botbot_phrase.contains("botbot admin") && adminsys_list.contains(&self.sender_id){
+            if botbot_phrase.contains("turbotbot") {
+                let chat_gpt=
+                match chat_gpt_answer(botbot_phrase) {
+                    Ok(chat_gpt_ctrl) => Ok(format!("{}", chat_gpt_ctrl)),
+                    Err(e) => Err(format!("ERROR: unable to get anwser {}", e)),
+                };
+            chat_gpt
+            } else if botbot_phrase.contains("techbot") {
+                let tech_deb=
+                match tech_deb_answer(botbot_phrase) {
+                    Ok(tech_deb_ctrl) => Ok(format!("{}", tech_deb_ctrl)),
+                    Err(e) => Err(format!("ERROR: unable to get anwser {}", e)),
+                };
+            tech_deb
+            } else if botbot_phrase.contains("botbot admin") && adminsys_list.contains(&self.sender_id){
                 let admin_answer =
                     // _mode admin pour ajout de trigger
                     if botbot_phrase.contains("admin add") {
@@ -107,18 +121,25 @@ impl Message{
                 let chat_to_jockes = Ok(format!("{}",String::from_utf8_lossy(&contents.0)));
                 chat_to_jockes
             } else {
+                println!("rep flag {}: {}", &self.sender_id, botbot_phrase);
+                let chat_gpt=
+                    match chat_gpt_answer(botbot_phrase) {
+                        Ok(chat_gpt_ctrl) => Ok(format!("{}", chat_gpt_ctrl)),
+                        Err(e) => Err(format!("ERROR: unable to get anwser {}", e)),
+                };
+                chat_gpt
                 // _réponse de botbot
-                let chat_answer =
-                    match get_answer(botbot_phrase, connection_db, trigger_word_list){
-                        Ok(answer_ctrl) => {
-                            // _remplace les %s par le nom du sender et les %n par un retour à la ligne
-                            let answer_with_name= &answer_ctrl[..].replace("%s", &self.sender_name);
-                            let answer_with_new_line = &answer_with_name[..].replace("%n", "\n");
-                            Ok(answer_with_new_line.to_string())
-                        }
-                        Err(e) => Err(format!("ERROR: chat answer {}",  e)),
-                    };
-                chat_answer
+                //let chat_answer =
+                //    match get_answer(botbot_phrase, connection_db, trigger_word_list){
+                //        Ok(answer_ctrl) => {
+                //            // _remplace les %s par le nom du sender et les %n par un retour à la ligne
+                //            let answer_with_name= &answer_ctrl[..].replace("%s", &self.sender_name);
+                //            let answer_with_new_line = &answer_with_name[..].replace("%n", "\n");
+                //            Ok(answer_with_new_line.to_string())
+                //        }
+                //        Err(e) => Err(format!("ERROR: chat answer {}",  e)),
+                //    };
+                //chat_answer
             };
         answer
     }

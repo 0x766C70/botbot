@@ -36,6 +36,22 @@ pub fn botbot_read(line_from_buffer: &String, connection_db: &Connection, trigge
                             Err(e) => Err(format!("Message from {}: {}", incoming_message.sender_name, e)),
                         };
                     thinking_check
+                // _chatgpt
+                } else if raw_message.contains("turbotbot") {
+                    let thinking_check =
+                        match incoming_message.thinking(&adminsys_list, &admincore_list, trigger_word_list, &connection_db){
+                            Ok(answer_ctrl) => Ok(answer_ctrl),
+                            Err(e) => Err(format!("Message from {}: {}", incoming_message.sender_name, e)),
+                        };
+                    thinking_check
+                // _si le message reçu contient un numéro de ticket
+                } else if raw_message.contains("techbot") {
+                    let thinking_check =
+                        match incoming_message.thinking(&adminsys_list, &admincore_list, trigger_word_list, &connection_db){
+                            Ok(answer_ctrl) => Ok(answer_ctrl),
+                            Err(e) => Err(format!("Message from {}: {}", incoming_message.sender_name, e)),
+                        };
+                    thinking_check
                 // _si le message reçu contient un numéro de ticket
                 } else if ticket_regex.is_match(&raw_message)  && incoming_message.room_origin == "fdn-tickets-internal" {
                     //_isole le numéro du ticket avec le regex
