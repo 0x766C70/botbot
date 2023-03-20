@@ -1,7 +1,6 @@
 use unidecode::unidecode;
 use sqlite::Connection;
 use std::process::Child;
-use crate::database::{get_answer, add_chat, del_chat};
 mod message_mgmt;
 pub use message_mgmt::*;
 use crate::my_system::*;
@@ -38,72 +37,7 @@ impl Message{
         //botbot_phrase.make_ascii_lowercase();
         println!("{}: {}", &self.sender_id, botbot_phrase);
         let answer =
-            if botbot_phrase.contains("turbotbot") {
-                let chat_gpt=
-                match chat_gpt_answer(botbot_phrase) {
-                    Ok(chat_gpt_ctrl) => Ok(format!("{}", chat_gpt_ctrl)),
-                    Err(e) => Err(format!("ERROR: unable to get anwser {}", e)),
-                };
-            chat_gpt
-            } else if botbot_phrase.contains("techbot") {
-                let tech_deb=
-                match tech_deb_answer(botbot_phrase) {
-                    Ok(tech_deb_ctrl) => Ok(format!("{}", tech_deb_ctrl)),
-                    Err(e) => Err(format!("ERROR: unable to get anwser {}", e)),
-                };
-            tech_deb
-            } else if botbot_phrase.contains("botbot admin") && adminsys_list.contains(&self.sender_id){
-                let admin_answer =
-                    // _mode admin pour ajout de trigger
-                    if botbot_phrase.contains("admin add") {
-                        let chat_to_add =
-                            match add_chat(botbot_phrase, connection_db, trigger_word_list) {
-                                Ok(chat_to_add_ctrl) => Ok(format!("[admin mode by: {}] {} ajouté !", &self.sender_name, chat_to_add_ctrl)),
-                                Err(e) => Err(format!("ERROR: chat_to_add process to add {}", e)),
-                            };
-                        chat_to_add
-                    // _mode admin pour suppression de trigger
-                    } else if botbot_phrase.contains("admin del") {
-                        let chat_to_del =
-                            match del_chat(botbot_phrase, connection_db, trigger_word_list) {
-                                Ok(del_chat_ctrl) => Ok(format!("[admin mode by: {}] {} supprimé !", &self.sender_name, del_chat_ctrl)),
-                                Err(e) => Err(format!("ERROR: chat_to_del proceed to del {}", e)),
-                            };
-                        chat_to_del
-                    // _mode admin pour afficher l'espace restant dans /var
-                    } else if botbot_phrase.contains("admin space") {
-                        let chat_to_space_left=
-                            match monit_disk_space(crate::MATRIX_DRIVE.to_string()) {
-                                Ok(chat_to_space_left_ctrl) => Ok(format!("Disk usage: {}%", chat_to_space_left_ctrl)),
-                                Err(e) => Err(format!("ERROR: unable to get disk usage {}", e)),
-                            };
-                        chat_to_space_left
-                    } else if botbot_phrase.contains("admin annonce") {
-                        let _ = &self.change_room("!IVhsVGlnEjiLZiiDkl:matrix.fdn.fr".to_string(), "fdn".to_string());
-                        let chat_to_all= Ok(format!("ANNONCE: {}", &self.m_message));
-                        chat_to_all
-                    } else {
-                        Err("ERROR: no admin command".to_string())
-                    };
-                admin_answer
-            // _ping équipe admincore + adminsys
-            } else if botbot_phrase.contains("ping adminsys") {
-                let chat_to_ping_adminsys=
-                    match get_admin_list(&self.sender_name, adminsys_list) {
-                        Ok(chat_to_ping_adminsys_ctrl) => Ok(format!("Hello les adminsys: {} vous contacte ! {}", &self.sender_name, chat_to_ping_adminsys_ctrl)),
-                        Err(e) => return Err(format!("ERROR: unable to get adminsys list {}", e)),
-                    };
-                chat_to_ping_adminsys
-            // _ping equipe admincore
-            } else if botbot_phrase.contains("ping admincore") {
-                let chat_to_ping_admincore=
-                    match get_admin_list(&self.sender_name, admincore_list) {
-                        Ok(chat_to_ping_admincore_ctrl) => Ok(format!("Hello les admincore: {} vous contacte ! {}", &self.sender_name, chat_to_ping_admincore_ctrl)),
-                        Err(e) => return Err(format!("ERROR: unable to get admincore list {}", e)),
-                    };
-                chat_to_ping_admincore
-            // _envoie une alerte sur #adminsys
-            } else if botbot_phrase.contains("!alert") || botbot_phrase.contains("!alerte") {
+            if botbot_phrase.contains("!alert") || botbot_phrase.contains("!alerte") {
                 // _on change le message pour que la réponse parte sur le chan adminsys
                 let _ = &self.change_room("!sjkTrbbOksVnLWuzlc:matrix.fdn.fr".to_string(), "fdn-adminsys".to_string());
                 let chat_to_alert_admincore=
@@ -112,23 +46,16 @@ impl Message{
                         Err(e) => return Err(format!("ERROR: unable to get admincore list {}", e)),
                     };
                 chat_to_alert_admincore
-            } else if botbot_phrase.contains("blague") {
-                let mut easy = Easy2::new(Collector(Vec::new()));
-                easy.get(true).unwrap();
-                easy.url("https://v2.jokeapi.dev/joke/Programming?blacklistFlags=racist&format=txt").unwrap();
-                easy.perform().unwrap();
-                let contents = easy.get_ref();
-                let chat_to_jockes = Ok(format!("{}",String::from_utf8_lossy(&contents.0)));
-                chat_to_jockes
             } else {
-                println!("rep flag {}: {}", &self.sender_id, botbot_phrase);
                 let chat_gpt=
-                    match chat_gpt_answer(botbot_phrase) {
-                        Ok(chat_gpt_ctrl) => Ok(format!("{}", chat_gpt_ctrl)),
+                    match chat_gpt_answer(botbot_phrase, ) {
+                        Ok(chat_gpt_ctrl) => {
+                            let chat_gpt_ctrl_with_name = &chat_gpt_ctrl[..].replace("dummyname", &self.sender_name);
+                            Ok(format!("{}", chat_gpt_ctrl_with_name))
+                        }
                         Err(e) => Err(format!("ERROR: unable to get anwser {}", e)),
                 };
                 chat_gpt
-                // _réponse de botbot
                 //let chat_answer =
                 //    match get_answer(botbot_phrase, connection_db, trigger_word_list){
                 //        Ok(answer_ctrl) => {

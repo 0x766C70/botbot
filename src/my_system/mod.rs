@@ -1,24 +1,18 @@
 use std::process::Command;
 use regex::Regex;
+use chrono::prelude::*;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////  FONCTION de monitoring
 pub fn chat_gpt_answer(botbot_phrase: String) -> Result<String, String>{
-   let aichat_command = Command::new("aichat")
-       .arg("-r")
-       .arg("bar")
-       .arg(botbot_phrase)
-       .output()
-       .expect("failed to execute process");
 
-    let aichat_answer = String::from_utf8_lossy(&aichat_command.stdout);
-    Ok(aichat_answer.to_string())
-}
-
-pub fn tech_deb_answer(botbot_phrase: String) -> Result<String, String>{
-   let aichat_command = Command::new("aichat")
+    let local: DateTime<Local> = Local::now();
+    let f_time=format!("{}",local.format("%Hh%M").to_string());
+    let f_date=format!("{}",local.format("%Y-%m-%d").to_string());
+    let role=format!("bar:{}:{}",f_time,f_date);
+    let aichat_command = Command::new("aichat")
        .arg("-r")
-       .arg("tech")
+       .arg(role)   
        .arg(botbot_phrase)
        .output()
        .expect("failed to execute process");
