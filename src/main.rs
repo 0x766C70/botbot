@@ -3,8 +3,7 @@
 
 /// INTERNAL CRATES
 mod message;
-mod database;
-use crate::database::init_db;
+//mod database;
 mod matrix;
 use crate::matrix::matrix_commander_daemon_launch;
 mod botbot_actions;
@@ -20,35 +19,12 @@ use regex::Regex;
 const MATRIX_FOLDER: &str = "/srv/botbot_python3.8_venv/lib/python3.8/site-packages/matrix_commander/matrix_commander.py";
 const MATRIX_CREDITENTIALS: &str = "-c/srv/botbot_python3.8_venv/lib/python3.8/site-packages/matrix_commander/credentials.json";
 const MATRIX_DB_FOLDER: &str = "-s/srv/botbot_python3.8_venv/lib/python3.8/site-packages/matrix_commander/store/";
-const MATRIX_DRIVE: &str = "/dev/vdb";
 ////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////  FONCTION principale
 
 fn main() {
 
-    println!("///// botbot v2.1 by lovely fdn team");
-
-    println!("[Database]");
-
-    // _connexion à la db ou création de la db si n'existe pas
-    // _initialisation de la liste des mots trigger "trigger_word_list": qui déclenchent une réponse de botbot
-    // _la liste est placée dans un tableau remplis depuis la db pour pas à avoir à faire une requête
-    // dans la db à chaque fois que botbot doit analyser les phrases.
-    let (connection_db_result, mut trigger_word_list, adminsys_list, admincore_list) = init_db ();
-
-    // _controle de la connexion à la db
-    // _si error on quite le programme
-    let connection_db =
-        match connection_db_result {
-            Ok(connection_db_ctrl) => {
-                println!(" > Database initialized with {} words", trigger_word_list.len());
-                connection_db_ctrl
-            }
-            Err(e) => {
-                println!("Error: Database initialization failed: {}", e);
-                return
-            }
-        };
+    println!("///// botbot v2.2 by lovely fdn team");
 
     println!("[Matrix Connection]");
 
@@ -109,15 +85,6 @@ fn main() {
 
     line_from_buffer.clear();
 
-    //////////////// test
-    // thread::spawn(|| {
-    //     for i in 1..10 {
-    //         println!("hi number {} from the spawned thread!", i);
-    //         thread::sleep(Duration::from_millis(1000));
-    //     }
-    // });
-    //////////////// test
-
     // _boucle global qui est bloquante à cause de read.line qui attend un '\n' pour avancer
     loop {
         // _vérifie que le 'processus' de matrix-commander existe toujours en mémoire sinon arréte le program
@@ -126,23 +93,11 @@ fn main() {
             return;
         }
 
-        //////////////// test
-        // _affiche un message chaques minutes
-        // for datetime in schedule.upcoming(Local).take(1) {
-        //     let raw_date_now: DateTime<Local> = Local::now();
-        //     let date_now = raw_date_now.format("%Y-%m-%d %H:%M:%S").to_string();
-        //     let next_date = datetime.format("%Y-%m-%d %H:%M:%S").to_string();
-        //     if  date_now ==  next_date {
-        //         println!("!ALIVE: {}", date_now);
-        //     }
-        // }
-        //////////////// test
-
         // _lecture ligne à ligne du buffer
         let _buffer_control =
             match matrix_commander_ready_buffer.read_line(&mut line_from_buffer) {
                 Ok(buffer_control_ctrl) => {
-                    botbot_read(&line_from_buffer, &connection_db, &mut trigger_word_list, &adminsys_list, &admincore_list, &ticket_regex);
+                    botbot_read(&line_from_buffer, &ticket_regex);
                     line_from_buffer.clear();
                     buffer_control_ctrl
                 }

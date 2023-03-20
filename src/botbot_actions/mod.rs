@@ -1,9 +1,9 @@
-use sqlite::Connection;
+//use sqlite::Connection;
 use regex::Regex;
 use crate::message::*;
 use crate::matrix::*;
 
-pub fn botbot_read(line_from_buffer: &String, connection_db: &Connection, trigger_word_list: &mut Vec<String>, adminsys_list: &Vec<String>, admincore_list: &Vec<String>, ticket_regex: &Regex) -> () {
+pub fn botbot_read(line_from_buffer: &String, ticket_regex: &Regex) -> () {
     // _split la ligne de buffer selon le char "|" cf: https://github.com/8go/matrix-commander
     let raw_data: Vec<&str> = line_from_buffer.split('|').collect();
     // _check que la trame a bien 5 partie cf: https://github.com/8go/matrix-commander
@@ -31,28 +31,12 @@ pub fn botbot_read(line_from_buffer: &String, connection_db: &Connection, trigge
                 // _si le message reçu contient "botbot"
                 if raw_message.contains("botbot") {
                     let thinking_check =
-                        match incoming_message.thinking(&adminsys_list, &admincore_list, trigger_word_list, &connection_db){
+                        match incoming_message.thinking(){
                             Ok(answer_ctrl) => Ok(answer_ctrl),
                             Err(e) => Err(format!("Message from {}: {}", incoming_message.sender_name, e)),
                         };
                     thinking_check
                 // _chatgpt
-                } else if raw_message.contains("turbotbot") {
-                    let thinking_check =
-                        match incoming_message.thinking(&adminsys_list, &admincore_list, trigger_word_list, &connection_db){
-                            Ok(answer_ctrl) => Ok(answer_ctrl),
-                            Err(e) => Err(format!("Message from {}: {}", incoming_message.sender_name, e)),
-                        };
-                    thinking_check
-                // _si le message reçu contient un numéro de ticket
-                } else if raw_message.contains("techbot") {
-                    let thinking_check =
-                        match incoming_message.thinking(&adminsys_list, &admincore_list, trigger_word_list, &connection_db){
-                            Ok(answer_ctrl) => Ok(answer_ctrl),
-                            Err(e) => Err(format!("Message from {}: {}", incoming_message.sender_name, e)),
-                        };
-                    thinking_check
-                // _si le message reçu contient un numéro de ticket
                 } else if ticket_regex.is_match(&raw_message)  && incoming_message.room_origin == "fdn-tickets-internal" {
                     //_isole le numéro du ticket avec le regex
                     let regex_capture = ticket_regex.captures(&incoming_message.m_message).unwrap();

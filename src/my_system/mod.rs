@@ -22,7 +22,7 @@ pub fn chat_gpt_answer(botbot_phrase: String) -> Result<String, String>{
 }
 
 // _retourn l'espace utilisé du disk passé en argument
-pub fn monit_disk_space(disk: String) -> Result<i32, String> {
+pub fn _monit_disk_space(disk: String) -> Result<i32, String> {
 
     let mut disk_status: Vec<&str> = Vec::new();
 

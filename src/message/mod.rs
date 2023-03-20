@@ -1,11 +1,8 @@
 use unidecode::unidecode;
-use sqlite::Connection;
 use std::process::Child;
-mod message_mgmt;
-pub use message_mgmt::*;
 use crate::my_system::*;
 use crate::matrix::*;
-use curl::easy::{Easy2, Handler, WriteError};
+use curl::easy::{Handler, WriteError};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////  Structure et traits des messages reçus
@@ -31,8 +28,8 @@ impl Handler for Collector {
 // _traits de Message
 impl Message{
     // _détermine les actions de botbot lorsqu'il est déclenché
-    pub fn thinking(&mut self, adminsys_list: &Vec<String>, admincore_list: &Vec<String>, trigger_word_list: &mut Vec<String>, connection_db: &Connection) -> Result<String, String> {
-        let mut botbot_phrase = String::from(unidecode(&self.m_message).to_string());
+    pub fn thinking(&mut self) -> Result<String, String> {
+        let botbot_phrase = String::from(unidecode(&self.m_message).to_string());
         // _uppercases
         //botbot_phrase.make_ascii_lowercase();
         println!("{}: {}", &self.sender_id, botbot_phrase);
@@ -40,12 +37,7 @@ impl Message{
             if botbot_phrase.contains("!alert") || botbot_phrase.contains("!alerte") {
                 // _on change le message pour que la réponse parte sur le chan adminsys
                 let _ = &self.change_room("!sjkTrbbOksVnLWuzlc:matrix.fdn.fr".to_string(), "fdn-adminsys".to_string());
-                let chat_to_alert_admincore=
-                    match get_admin_list(&self.sender_name, admincore_list) {
-                        Ok(chat_to_ping_admincore_ctrl) => Ok(format!("ALERTE remontée par {} ! {}", &self.sender_name, chat_to_ping_admincore_ctrl)),
-                        Err(e) => return Err(format!("ERROR: unable to get admincore list {}", e)),
-                    };
-                chat_to_alert_admincore
+                Ok(format!("Alerte !"))
             } else {
                 let chat_gpt=
                     match chat_gpt_answer(botbot_phrase, ) {
@@ -56,17 +48,6 @@ impl Message{
                         Err(e) => Err(format!("ERROR: unable to get anwser {}", e)),
                 };
                 chat_gpt
-                //let chat_answer =
-                //    match get_answer(botbot_phrase, connection_db, trigger_word_list){
-                //        Ok(answer_ctrl) => {
-                //            // _remplace les %s par le nom du sender et les %n par un retour à la ligne
-                //            let answer_with_name= &answer_ctrl[..].replace("%s", &self.sender_name);
-                //            let answer_with_new_line = &answer_with_name[..].replace("%n", "\n");
-                //            Ok(answer_with_new_line.to_string())
-                //        }
-                //        Err(e) => Err(format!("ERROR: chat answer {}",  e)),
-                //    };
-                //chat_answer
             };
         answer
     }
