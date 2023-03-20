@@ -4,8 +4,8 @@
 * Il permet aussi des actions basiques d'interraction pour les admins
 
 ## Installation
-***Pré-requis: le bot se base sur l'api python https://github.com/8go/matrix-commander. Il est nécessaire de l'installer en amont et de la configurer avec le compte dédié au bot***
-***Pré-requis: le bot utilise l'API openai via https://github.com/sigoden/aichat***
+- ***Pré-requis: le bot se base sur l'api python https://github.com/8go/matrix-commander. Il est nécessaire de l'installer en amont et de la configurer avec le compte dédié au bot***
+- ***Pré-requis: le bot utilise l'API openai via https://github.com/sigoden/aichat***
 
 1. git clone https://git.fdn.fr/adminsys/botbot_v2.git
 2. dans le fichier main.rs modifier les chemins des répertoires de l'API pour les variables: MATRIX_FOLDER, MATRIX_CREDITENTIALS et MATRIX_DB_FOLDER
