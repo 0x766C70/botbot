@@ -9,7 +9,6 @@ edition = "2018"
 [dependencies]
 unidecode = "0.3.0"
 rand = "0.8.0"
-sqlite = "0.25.3"
 procfs = "0.9.1"
 regex = "1.4.3"
 cron = "0.7.0"
