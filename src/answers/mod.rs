@@ -10,6 +10,7 @@ pub fn chat_gpt_answer(botbot_phrase: String) -> Result<String, String>{
     let f_time=format!("{}",local.format("%Hh%M").to_string());
     let f_date=format!("{}",local.format("%Y-%m-%d").to_string());
     let role=format!("bar:{}:{}",f_time,f_date);
+    
     let aichat_command = Command::new("aichat")
        .arg("-r")
        .arg(role)   

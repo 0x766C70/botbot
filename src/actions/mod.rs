@@ -3,7 +3,12 @@ use regex::Regex;
 use crate::message::*;
 use crate::matrix::*;
 
-pub fn botbot_read(line_from_buffer: &String, ticket_regex: &Regex, picture_regex: &Regex) -> () {
+// cas de délanchement de botbot
+// 1- on lui parle et le trigger est "botbot"
+// 2- il détecte un numéro de ticket
+
+
+pub fn botbot_read(line_from_buffer: &String, ticket_regex: &Regex) -> () {
     // _split la ligne de buffer selon le char "|" cf: https://github.com/8go/matrix-commander
     let raw_data: Vec<&str> = line_from_buffer.split('|').collect();
     // _check que la trame a bien 5 partie cf: https://github.com/8go/matrix-commander
@@ -11,7 +16,7 @@ pub fn botbot_read(line_from_buffer: &String, ticket_regex: &Regex, picture_rege
     // _on crée la variable raw_message qui est la dernière partie de la trame
     // _on mets tout en lowercase + on retire les accents afin de maximiser les match dans la db
         let mut raw_message = String::from(raw_data[3]);
-        raw_message.make_ascii_lowercase();
+        raw_message.make_ascii_lowercase(); // A CHECK SI ENCORE UTILE
         // _on ignore les trames qui commencent par '>' qui sont dans matrix la reprise d'un message auquel on répond
         let raw_message_fist_char = raw_message.chars().nth(1).unwrap_or(' ');
         if raw_message_fist_char !=  '>' {
@@ -29,8 +34,8 @@ pub fn botbot_read(line_from_buffer: &String, ticket_regex: &Regex, picture_rege
             // _retour de la réponse en fonction du global trigger (botbot || #ticket) dans raw_message via la methode .thinking ou .ticket
             //println!("{}",picture_regex);
             let trigger_answer_result =
-                // _si le message reçu contient "botbot"
                 if raw_message.contains("botbot") {
+                // _si le message reçu contient "botbot"
                     let thinking_check =
                         match incoming_message.thinking(){
                             Ok(answer_ctrl) => Ok(answer_ctrl),
@@ -51,22 +56,6 @@ pub fn botbot_read(line_from_buffer: &String, ticket_regex: &Regex, picture_rege
                         Err(e) => Err(format!("ticket: {}", e)),
                     };
                     ticket_check
-                } else if picture_regex.is_match(&raw_message) {
-                    //_isole le numéro du ticket avec le regex
-                    let regex_capture = picture_regex.captures(&incoming_message.m_message).unwrap();
-                    let raw_picture_url = match regex_capture.get(0) {
-                        Some(raw_picture_url_ctrl) => raw_picture_url_ctrl.as_str(),
-                        None => return,
-                    };
-                    let picture_url = raw_picture_url.to_string();
-                    //let ticket_check=
-                    //match incoming_message.ticket(ticket_number){
-                    //    Ok(answer_ctrl) => Ok(answer_ctrl),
-                    //    Err(e) => Err(format!("ticket: {}", e)),
-                    //};
-                    println!("{}",picture_url);
-                    Ok("ok".to_string())
-                // _si aucune action à faire n'est détecté
                 } else {
                     Err(format!("Message from {}: No global trigger found", incoming_message.sender_name))
                 };

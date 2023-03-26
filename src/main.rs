@@ -3,12 +3,11 @@
 
 /// INTERNAL CRATES
 mod message;
-//mod database;
 mod matrix;
 use crate::matrix::matrix_commander_daemon_launch;
-mod botbot_actions;
-use crate::botbot_actions::*;
-mod my_system;
+mod actions;
+use crate::actions::*;
+mod answers;
 
 /// EXTERNAL CRATES
 use std::io::{BufRead, BufReader};
@@ -72,7 +71,6 @@ fn main() {
 
     // _pré-construit les regex
     let ticket_to_search_re = "#[0-9]{4,6}".to_string();
-    let picture_to_search_re = ".+\\[emxc:.+]".to_string();
     let ticket_regex =
         match Regex::new(&ticket_to_search_re){
             Ok(ticket_re_ctrl) => ticket_re_ctrl,
@@ -82,15 +80,6 @@ fn main() {
             }
         };
 
-    let picture_regex =
-        match Regex::new(&picture_to_search_re){
-            Ok(picture_re_ctrl) => picture_re_ctrl,
-            Err(_e) => {
-                println!("Error: fail to build picture regex");
-                return
-            }
-        };
-    
     println!("[botbot is running]");
 
     line_from_buffer.clear();
@@ -107,7 +96,7 @@ fn main() {
         let _buffer_control =
             match matrix_commander_ready_buffer.read_line(&mut line_from_buffer) {
                 Ok(buffer_control_ctrl) => {
-                    botbot_read(&line_from_buffer, &ticket_regex, &picture_regex);
+                    botbot_read(&line_from_buffer, &ticket_regex);
                     line_from_buffer.clear();
                     buffer_control_ctrl
                 }

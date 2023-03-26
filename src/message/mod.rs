@@ -1,6 +1,6 @@
 use unidecode::unidecode;
 use std::process::Child;
-use crate::my_system::*;
+use crate::answers::*;
 use crate::matrix::*;
 use curl::easy::{Handler, WriteError};
 
@@ -35,12 +35,15 @@ impl Message{
         println!("{}: {}", &self.sender_id, botbot_phrase);
         let answer =
             if botbot_phrase.contains("!alert") || botbot_phrase.contains("!alerte") {
-                // _on change le message pour que la réponse parte sur le chan adminsys
+                // _on change le Message pour que la réponse parte sur le chan adminsys
                 let _ = &self.change_room("!sjkTrbbOksVnLWuzlc:matrix.fdn.fr".to_string(), "fdn-adminsys".to_string());
                 Ok(format!("Alerte !"))
+            } else if &self.sender_id == "@vlp:matrix.fdn.fr" && botbot_phrase.contains("!admin")  {
+                println!("{} admin action", &self.sender_name);
+                Ok(format!("Admin actions"))
             } else {
                 let chat_gpt=
-                    match chat_gpt_answer(botbot_phrase, ) {
+                    match chat_gpt_answer(botbot_phrase) {
                         Ok(chat_gpt_ctrl) => {
                             let chat_gpt_ctrl_with_name = &chat_gpt_ctrl[..].replace("dummyname", &self.sender_name);
                             Ok(format!("{}", chat_gpt_ctrl_with_name))
