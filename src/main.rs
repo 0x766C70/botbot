@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////  botbot v2 by vlp
 
-/// INTERNAL CRATES
+// INTERNAL CRATES
 mod message;
 mod matrix;
 use crate::matrix::matrix_commander_daemon_launch;
@@ -9,8 +9,9 @@ mod actions;
 use crate::actions::*;
 mod answers;
 
-/// EXTERNAL CRATES
+// EXTERNAL CRATES
 use std::io::{BufRead, BufReader};
+use std::env;
 use procfs::process::Process;
 use regex::Regex;
 
@@ -18,12 +19,20 @@ use regex::Regex;
 const MATRIX_FOLDER: &str = "/srv/botbot_python3.8_venv/lib/python3.8/site-packages/matrix_commander/matrix_commander.py";
 const MATRIX_CREDITENTIALS: &str = "-c/srv/botbot_python3.8_venv/lib/python3.8/site-packages/matrix_commander/credentials.json";
 const MATRIX_DB_FOLDER: &str = "-s/srv/botbot_python3.8_venv/lib/python3.8/site-packages/matrix_commander/store/";
+
+// ENV
+
 ////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////  FONCTION principale
 
 fn main() {
 
-    println!("///// botbot v2.2 by lovely fdn team");
+
+    // _env pour aichat afin d'avoir le fichier de role dans le repo
+    let aichat_roles: &str = "AICHAT_ROLES_FILE";
+    env::set_var(aichat_roles, "/srv/botbot_python3.8_venv/botbot_v2/roles.yaml");
+
+    println!("///// botbot v2.3 by lovely fdn team");
 
     println!("[Matrix Connection]");
 

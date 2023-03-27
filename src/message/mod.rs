@@ -37,20 +37,27 @@ impl Message{
             if botbot_phrase.contains("!alert") || botbot_phrase.contains("!alerte") {
                 // _on change le Message pour que la réponse parte sur le chan adminsys
                 let _ = &self.change_room("!sjkTrbbOksVnLWuzlc:matrix.fdn.fr".to_string(), "fdn-adminsys".to_string());
-                Ok(format!("Alerte !"))
+                Ok(format!("Alerte signalée par {}!", &self.sender_name))
             } else if &self.sender_id == "@vlp:matrix.fdn.fr" && botbot_phrase.contains("!admin")  {
-                println!("{} admin action", &self.sender_name);
-                Ok(format!("Admin actions"))
-            } else {
-                let chat_gpt=
-                    match chat_gpt_answer(botbot_phrase) {
-                        Ok(chat_gpt_ctrl) => {
-                            let chat_gpt_ctrl_with_name = &chat_gpt_ctrl[..].replace("dummyname", &self.sender_name);
-                            Ok(format!("{}", chat_gpt_ctrl_with_name))
+                let chat_admin=
+                    match admin_answer(botbot_phrase) {
+                        Ok(admin_ctrl) => {
+                            let admin_ctrl_with_name = &admin_ctrl[..].replace("dummyname", &self.sender_name);
+                            Ok(format!("{}", admin_ctrl_with_name))
                         }
                         Err(e) => Err(format!("ERROR: unable to get anwser {}", e)),
                 };
-                chat_gpt
+                chat_admin
+            } else {
+                let chat_user=
+                    match user_answer(botbot_phrase) {
+                        Ok(user_ctrl) => {
+                            let user_ctrl_with_name = &user_ctrl[..].replace("dummyname", &self.sender_name);
+                            Ok(format!("{}", user_ctrl_with_name))
+                        }
+                        Err(e) => Err(format!("ERROR: unable to get anwser {}", e)),
+                };
+                chat_user
             };
         answer
     }

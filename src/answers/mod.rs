@@ -3,8 +3,32 @@ use regex::Regex;
 use chrono::prelude::*;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////  FONCTION de monitoring
-pub fn chat_gpt_answer(botbot_phrase: String) -> Result<String, String>{
+////////////////////////  Gestion des réponses en fonction des actions
+pub fn admin_answer(botbot_phrase: String) -> Result<String, String>{
+
+    let local: DateTime<Local> = Local::now();
+    let f_time=format!("{}",local.format("%Hh%M").to_string());
+    let f_date=format!("{}",local.format("%Y-%m-%d").to_string());
+    let db_size =
+            match monit_disk_space("/var/lib/postgresql".to_string()){
+                    Ok(db_size_ctrl) => db_size_ctrl.to_string(),
+                    Err(e) => format!("ERROR: size db - {}", e),
+            };
+    println!("{}",db_size);
+    let role=format!("adminsys:{}:{}:{}",f_time,f_date,db_size);
+    
+    let aichat_command = Command::new("aichat")
+       .arg("-r")
+       .arg(role)   
+       .arg(botbot_phrase)
+       .output()
+       .expect("failed to execute process");
+
+    let aichat_answer = String::from_utf8_lossy(&aichat_command.stdout);
+    Ok(aichat_answer.to_string())
+}
+
+pub fn user_answer(botbot_phrase: String) -> Result<String, String>{
 
     let local: DateTime<Local> = Local::now();
     let f_time=format!("{}",local.format("%Hh%M").to_string());
@@ -23,7 +47,7 @@ pub fn chat_gpt_answer(botbot_phrase: String) -> Result<String, String>{
 }
 
 // _retourn l'espace utilisé du disk passé en argument
-pub fn _monit_disk_space(disk: String) -> Result<i32, String> {
+pub fn monit_disk_space(disk: String) -> Result<i32, String> {
 
     let mut disk_status: Vec<&str> = Vec::new();
 
