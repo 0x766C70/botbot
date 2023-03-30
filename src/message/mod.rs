@@ -32,13 +32,13 @@ impl Message{
         let botbot_phrase = String::from(unidecode(&self.m_message).to_string());
         // _uppercases
         //botbot_phrase.make_ascii_lowercase();
-        println!("{}: {}", &self.sender_id, botbot_phrase);
+        println!("{} from {}: {}", &self.sender_id, &self.room_origin, botbot_phrase);
         let answer =
             if botbot_phrase.contains("!alert") || botbot_phrase.contains("!alerte") {
                 // _on change le Message pour que la réponse parte sur le chan adminsys
                 let _ = &self.change_room("!sjkTrbbOksVnLWuzlc:matrix.fdn.fr".to_string(), "fdn-adminsys".to_string());
                 Ok(format!("Alerte signalée par {}!", &self.sender_name))
-            } else if &self.sender_id == "@vlp:matrix.fdn.fr" && botbot_phrase.contains("!admin")  {
+            } else if (&self.sender_id == "@vlp:matrix.fdn.fr" || &self.sender_id == "tom28:matrix.fdn.fr" || &self.sender_id == "pandaroux:matrix.fdn.fr" || &self.sender_id == "asmadeus:codewreck.org" || &self.sender_id == "afriqs:matrix.fdn.fr" ) && botbot_phrase.contains("!admin")  {
                 let chat_admin=
                     match admin_answer(botbot_phrase) {
                         Ok(admin_ctrl) => {
@@ -48,7 +48,7 @@ impl Message{
                         Err(e) => Err(format!("ERROR: unable to get anwser {}", e)),
                 };
                 chat_admin
-            } else {
+            } else if &self.room_origin != "fdn-adminsys"{
                 let chat_user=
                     match user_answer(botbot_phrase) {
                         Ok(user_ctrl) => {
@@ -58,6 +58,8 @@ impl Message{
                         Err(e) => Err(format!("ERROR: unable to get anwser {}", e)),
                 };
                 chat_user
+            } else {
+                Err(format!("ERROR: no match"))
             };
         answer
     }

@@ -13,12 +13,13 @@ pub fn botbot_read(line_from_buffer: &String, ticket_regex: &Regex) -> () {
     let raw_data: Vec<&str> = line_from_buffer.split('|').collect();
     // _check que la trame a bien 5 partie cf: https://github.com/8go/matrix-commander
     if raw_data.len() == 4 {
-    // _on crée la variable raw_message qui est la dernière partie de la trame
-    // _on mets tout en lowercase + on retire les accents afin de maximiser les match dans la db
+        // _on crée la variable raw_message qui est la dernière partie de la trame
+        // _on mets tout en lowercase + on retire les accents afin de maximiser les match dans la db
         let mut raw_message = String::from(raw_data[3]);
-        raw_message.make_ascii_lowercase(); // A CHECK SI ENCORE UTILE
+        raw_message.make_ascii_lowercase();
         // _on ignore les trames qui commencent par '>' qui sont dans matrix la reprise d'un message auquel on répond
         let raw_message_fist_char = raw_message.chars().nth(1).unwrap_or(' ');
+        // _on clean les différentes parties de la trame
         if raw_message_fist_char !=  '>' {
             let (clean_room_id, clean_room, clean_sender_id, clean_sender_name, clean_message) =
             match clean_trame(raw_data){
@@ -29,10 +30,10 @@ pub fn botbot_read(line_from_buffer: &String, ticket_regex: &Regex) -> () {
                     return
                 },
             };
-            // _création d'un Message
+            // _le buffer est pret à être converti en Message qui est une structure comportant: la
+            // room d'origine et son id le sender d'origine et son id et enfin le texte
             let mut incoming_message = Message{room_origin: clean_room, room_id: clean_room_id, sender_id: clean_sender_id, sender_name: clean_sender_name, m_message: clean_message};
-            // _retour de la réponse en fonction du global trigger (botbot || #ticket) dans raw_message via la methode .thinking ou .ticket
-            //println!("{}",picture_regex);
+            // _check si dans le Message il y a un trigger (botbot || #ticket)
             let trigger_answer_result =
                 if raw_message.contains("botbot") {
                 // _si le message reçu contient "botbot"

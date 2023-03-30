@@ -4,7 +4,7 @@
 // INTERNAL CRATES
 mod message;
 mod matrix;
-use crate::matrix::matrix_commander_daemon_launch;
+use crate::matrix::{matrix_launch, matrix_commander_daemon_launch};
 mod actions;
 use crate::actions::*;
 mod answers;
@@ -36,6 +36,9 @@ fn main() {
 
     println!("[Matrix Connection]");
 
+
+    //let mc_process_handler = Process::new(matrix_launch());
+
     // _créer un processus fils au programme qui lance matrix-commander et qui pipe son flux stdout
     // _si error on quite le programme
     let mut matrix_commander =
@@ -61,7 +64,7 @@ fn main() {
             }
         };
 
-    // _
+    // _pipe le stdout de matrix_commander dans un buffer
     // _si error on quite le programme
     let matrix_commander_raw_buffer =
         match matrix_commander.stdout.as_mut(){
@@ -72,13 +75,16 @@ fn main() {
             }
         };
 
-    // _crée un buffer allimenter par le stdout du processus matrix-commander
+    // _crée un buffer allimenté par le stdout du processus matrix-commander
     let mut matrix_commander_ready_buffer = BufReader::new(matrix_commander_raw_buffer);
 
+    println!("from main: {:?}", matrix_commander_ready_buffer);
+    
     // _crée la variable "line_from_buffer" qui va pouvoir réceptionner les data du buffer ligne à ligne
     let mut line_from_buffer = String::new();
+    line_from_buffer.clear();
 
-    // _pré-construit les regex
+    // _pré-construit le regex ticket
     let ticket_to_search_re = "#[0-9]{4,6}".to_string();
     let ticket_regex =
         match Regex::new(&ticket_to_search_re){
@@ -90,8 +96,6 @@ fn main() {
         };
 
     println!("[botbot is running]");
-
-    line_from_buffer.clear();
 
     // _boucle global qui est bloquante à cause de read.line qui attend un '\n' pour avancer
     loop {
