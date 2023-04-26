@@ -7,13 +7,13 @@
 - ***Pré-requis: le bot se base sur l'api python https://github.com/8go/matrix-commander. Il est nécessaire de l'installer en amont et de la configurer avec le compte dédié au bot***
 - ***Pré-requis: le bot utilise l'API openai via https://github.com/sigoden/aichat***
 
-1. git clone https://git.fdn.fr/adminsys/botbot_v2.git
+1. git clone
 2. dans le fichier main.rs modifier les chemins des répertoires de l'API pour les variables: MATRIX_FOLDER, MATRIX_CREDITENTIALS et MATRIX_DB_FOLDER
 3. `cargo build`
 4. lancer le program avec: `cargo run`
 
 ## How-to
-botbot est un bon conversationnel basé sur openai avec un paramétrage du prompt pour décrire son environnement, sa fonction et son comportement (cf: https://platform.openai.com/docs/api-reference/making-requests)
+botbot est un bot conversationnel basé sur openai avec un paramétrage du prompt pour décrire son environnement, sa fonction et son comportement (cf: https://platform.openai.com/docs/api-reference/making-requests)
 
 ## Admin
   - la config de bot se fait via le "role" `bar` utilisé par aichat.
