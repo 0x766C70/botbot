@@ -1,0 +1,19 @@
+[package]
+name = "botbot"
+version = "0.1.1"
+authors = ["vlp <thomas@criscione.fr>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+unidecode = "0.3.0"
+rand = "0.8.5"
+procfs = "0.16.0"
+regex = "1.10.4"
+cron = "0.12.1"
+chrono = "0.4.37"
+rss = "2.0.7"
+curl = "0.4.46"
+json = "0.12.4"
+sqlite = "0.28.1"
