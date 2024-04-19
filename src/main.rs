@@ -40,7 +40,7 @@ fn main() {
     // _la liste est placée dans un tableau remplis depuis la db pour pas à avoir à faire une requête
     // dans la db à chaque fois que botbot doit analyser les phrases.
 
-    let (connection_db_result, trigger_word_list, user_list) = init_db ();
+    let (connection_db_result, mut trigger_word_list, user_list) = init_db ();
     // _controle de la connexion à la db
     // _si error on quite le programme
     let connection_db =
@@ -129,7 +129,7 @@ fn main() {
         let _buffer_control =
             match matrix_commander_ready_buffer.read_line(&mut line_from_buffer) {
                 Ok(buffer_control_ctrl) => {
-                    botbot_read(&line_from_buffer, &connection_db, &user_list, &ticket_regex);
+                    botbot_read(&line_from_buffer, &connection_db, &user_list, &mut trigger_word_list, &ticket_regex);
                     line_from_buffer.clear();
                     buffer_control_ctrl
                 }

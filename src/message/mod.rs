@@ -1,7 +1,7 @@
 use sqlite::Connection;
 use unidecode::unidecode;
 use std::process::Child;
-use crate::database::{is_admin, is_sadmin, get_model};
+use crate::database::{is_admin, is_sadmin, get_model, get_sql_answer};
 use crate::answers::*;
 use crate::matrix::*;
 use curl::easy::{Handler, WriteError};
@@ -31,7 +31,7 @@ impl Handler for Collector {
 // _traits de Message
 impl Message{
     // _détermine les actions de botbot lorsqu'il est déclenché
-    pub fn thinking(&mut self, connection_db: &Connection, user_list: &Vec<String>) -> Result<String, String> {
+    pub fn thinking(&mut self, connection_db: &Connection, user_list: &Vec<String>, trigger_word_list: &mut Vec<String>) -> Result<String, String> {
         let botbot_phrase = String::from(unidecode(&self.m_message).to_string());
         println!("{} from {} room: {}", &self.sender_name, &self.room_origin, botbot_phrase);
         let answer =
@@ -46,15 +46,26 @@ impl Message{
                 // _définit le model de réponse: sql, openai
                 let answer_model = 
                     match get_model(connection_db, user_list, &self.sender_id, &self.room_origin){
-                        Ok(model_ctrl) => Ok(format!("{}", model_ctrl)),
-                        Err(e) => Err(format!("ERROR: unable to get model {}", e)),
+                        Ok(model_ctrl) =>  model_ctrl,
+                        Err(e) => format!("ERROR: unable to get model {}", e),
                     };
                 // _récupère la réponse en fonction du model
                 let user_answer =
-                    match get_answer(botbot_phrase, &self.sender_name, answer_model.unwrap()) {
-                        Ok(answer_ctrl) => Ok(format!("{}", answer_ctrl)),
-                        Err(e) => Err(format!("ERROR: unable to get anwser {}", e)),
-                };
+                    if answer_model == "sql" {
+                        match get_sql_answer(botbot_phrase, connection_db, trigger_word_list){
+                            Ok(sql_answer_ctrl) => {
+                                let sql_answer_with_name= &sql_answer_ctrl[..].replace("%s", &self.sender_name);
+                                let sql_answer_with_new_line = &sql_answer_with_name[..].replace("%n", "\n");
+                                Ok(format!("{}", sql_answer_with_new_line))
+                                }
+                            Err(e) => Err(format!("ERROR: unable to get sql anwser {}", e)),
+                        }
+                    } else {
+                        match get_answer(botbot_phrase, &self.sender_name, answer_model) {
+                            Ok(answer_ctrl) => Ok(format!("{}", answer_ctrl)),
+                            Err(e) => Err(format!("ERROR: unable to get anwser {}", e)),
+                       }
+                    };
                 user_answer
             };
         answer

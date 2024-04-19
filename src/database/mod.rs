@@ -94,8 +94,7 @@ pub fn is_sadmin(_connection_db: &Connection, _user_list: &Vec<String>, _sender_
 }
 
 // _renvoie le model
-pub fn get_model(_connection_db: &Connection, user_list: &Vec<String>, sender_name: &String, room_name: &String) -> Result<String, String> {
-    println!("Model de {} dans {}", sender_name, room_name);
+pub fn get_model(_connection_db: &Connection, user_list: &Vec<String>, sender_name: &String, _room_name: &String) -> Result<String, String> {
     match user_list.iter().position(|x| x == sender_name) {
         Some(_x) => Ok("mifa".to_string()),
         _ => Ok("sql".to_string()),
@@ -187,7 +186,7 @@ pub fn _del_chat(botbot_phrase: String, connection_db: &Connection, trigger_word
 }
 
 // _récupère une answer dans la base à partir de son trigger
-pub fn _get_answer(botbot_phrase: String, connection_db: &Connection, trigger_word_list: &mut Vec<String>) -> Result<String, String> {
+pub fn get_sql_answer(botbot_phrase: String, connection_db: &Connection, trigger_word_list: &mut Vec<String>) -> Result<String, String> {
     let mut tmp_answers: Vec<String> = Vec::new();
     for x in trigger_word_list {
         let re_to_search = format!("(\\s{}|^{}|'{})[\\s\\?!,]*", x, x, x);

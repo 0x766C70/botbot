@@ -8,7 +8,7 @@ use crate::matrix::*;
 // 2- il détecte un numéro de ticket
 
 
-pub fn botbot_read(line_from_buffer: &String, connection_db: &Connection, user_list: &Vec<String>, ticket_regex: &Regex) -> () {
+pub fn botbot_read(line_from_buffer: &String, connection_db: &Connection, user_list: &Vec<String>, trigger_word_list: &mut Vec<String>, ticket_regex: &Regex) -> () {
     // _split la ligne de buffer selon le char "|" cf: https://github.com/8go/matrix-commander
     let raw_data: Vec<&str> = line_from_buffer.split('|').collect();
     // _check que la trame a bien 5 partie cf: https://github.com/8go/matrix-commander
@@ -38,7 +38,7 @@ pub fn botbot_read(line_from_buffer: &String, connection_db: &Connection, user_l
                 if raw_message.contains("botbot") {
                 // _si le message reçu contient "botbot"
                     let thinking_check =
-                        match incoming_message.thinking(&connection_db, &user_list){
+                        match incoming_message.thinking(&connection_db, &user_list, trigger_word_list){
                             Ok(answer_ctrl) => Ok(answer_ctrl),
                             Err(e) => Err(format!("Message from {}: {}", incoming_message.sender_name, e)),
                         };
