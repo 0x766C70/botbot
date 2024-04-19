@@ -49,6 +49,7 @@ impl Message{
                         Ok(model_ctrl) =>  model_ctrl,
                         Err(e) => format!("ERROR: unable to get model {}", e),
                     };
+                println!("Model de réponse: {}", answer_model);
                 // _récupère la réponse en fonction du model
                 let user_answer =
                     if answer_model == "sql" {
