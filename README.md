@@ -1,6 +1,6 @@
 # [botbot]
 ***Disclaimer: ceci est un projet perso dans le but de découvrir le langage Rust, tout conseil sera donc très apprécié !***
-* bot dédié à accompagner les personnes connecté sur les chan IRC/matrix d'fdn
+* bot dédié à accompagner les personnes connectées sur les chan IRC/matrix d'fdn
 * Il permet aussi des actions basiques d'interraction pour les admins
 
 ## Installation
@@ -13,8 +13,8 @@
 4. lancer le program avec: `cargo run`
 
 ## How-to
-botbot est un bon conversationnel basé sur openai avec un paramétrage du prompt pour décrire son environnement, sa fonction et son comportement (cf: https://platform.openai.com/docs/api-reference/making-requests)
+botbot est un bon conversationnel basé sur:
+- un system de réponses via mot-clés dans une base sqlite
+- openai et différents prompts qui décrivent son environnement, sa fonction et son comportement (cf: https://platform.openai.com/docs/api-reference/making-requests)
 
-## Admin
-  - la config de bot se fait via le "role" `bar` utilisé par aichat.
-  - la description de ce role se trouve dans un fichier yaml à la racine du projet.
+Le choix entre sql/openai se fait en fonction de la demande des utilisateurs. Par default, tout le monde fonctionne via sql. Sur demande, on peut mettre en place openai pour un utilisateur sur une room/chan spécifique avec un prompt spécifique. Sur la même room peut cohabiter des réponses sql et des réponses openai.
