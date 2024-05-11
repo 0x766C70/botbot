@@ -98,7 +98,7 @@ fn main() {
     // _crée un buffer allimenté par le stdout du processus matrix-commander
     let mut matrix_commander_ready_buffer = BufReader::new(matrix_commander_raw_buffer);
 
-    //println!("from main: {:?}", matrix_commander_ready_buffer);
+    //println!("BUFFER: {:?}", matrix_commander_ready_buffer);
     
     // _crée la variable "line_from_buffer" qui va pouvoir réceptionner les data du buffer ligne à ligne
     let mut line_from_buffer = String::new();
@@ -129,6 +129,7 @@ fn main() {
         let _buffer_control =
             match matrix_commander_ready_buffer.read_line(&mut line_from_buffer) {
                 Ok(buffer_control_ctrl) => {
+                    //println!("BUFFER: {:?}", line_from_buffer);
                     botbot_read(&line_from_buffer, &connection_db, &user_list, &mut trigger_word_list, &ticket_regex);
                     line_from_buffer.clear();
                     buffer_control_ctrl

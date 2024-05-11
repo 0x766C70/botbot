@@ -74,7 +74,42 @@ pub fn clean_sender_name(raw_sender_name:String) -> Result<String, String> {
     }
 }
 
-pub fn clean_trame(matrix_trame:Vec<&str>) -> Result <(String,String,String,String,String), String> {
+// _isole l'information "media"
+pub fn clean_media(raw_msg_trame:String) -> Result<String, String> {
+    let debut = match raw_msg_trame.find("Received encrypted") {
+        Some(debut_index) => debut_index + 19,
+        None => return Ok("text".to_string()),
+    };
+    let fin = match raw_msg_trame.find(":") {
+        Some(fin_index) => fin_index,
+        None => return Ok("text".to_string()),
+    };
+    if debut >= fin {
+        Ok("text".to_string())
+    } else {
+        let clean_media = &raw_msg_trame[debut..fin];
+        Ok(clean_media.to_string())
+    }
+}
+
+pub fn clean_audio(raw_msg_trame:String) -> Result<String, String> {
+    let debut = match raw_msg_trame.find("Voice message_") {
+        Some(debut_index) => debut_index,
+        None => return Err("audio ERROR: Matrix-Commander output unreadable".to_string()),
+    };
+    let fin = match raw_msg_trame.find("ogg]") {
+        Some(fin_index) => fin_index + 3,
+        None => return Err("audio ERROR: Matrix-Commander output unreadable".to_string()),
+    };
+    if debut >= fin {
+        Err("audio ERROR: audio file unreadable".to_string())
+    } else {
+        let clean_audio = &raw_msg_trame[debut..fin];
+        Ok(clean_audio.to_string())
+    }
+}
+
+pub fn clean_trame(matrix_trame:Vec<&str>) -> Result <(String,String,String,String,String,String), String> {
 
     // _construction du message: cf la struct
     let clean_room_id           =
@@ -97,11 +132,30 @@ pub fn clean_trame(matrix_trame:Vec<&str>) -> Result <(String,String,String,Stri
             Ok(clean_sender_name_ok) => clean_sender_name_ok,
             Err(e) => return Err(format!("ERROR: clean_trame {}", e)),
         };
-    let raw_message = String::from(matrix_trame[3]);
-    // _on retire le \n de fin de trame
-    let pre_clean_message = &raw_message[1..(raw_message.len()-1)];
-    // _on retransforme en string
-    let clean_message = pre_clean_message.to_string();
+    let clean_media                  =
+        match clean_media(String::from(matrix_trame[3])) {
+            Ok(clean_media_ok) => clean_media_ok,
+            Err(e) => return Err(format!("ERROR: clean_trame {}", e)),
+        };
+    let clean_message               =
+        match clean_media.as_str() {
+            "text"  => {
+                let raw_message = String::from(matrix_trame[3]);
+                // _on retire le \n de fin de trame
+                let pre_clean_message = &raw_message[1..(raw_message.len()-1)];
+                // _on retransforme en string
+                pre_clean_message.to_string()
+            },
+            "audio" => {
+                let raw_message    =
+                    match clean_audio(String::from(matrix_trame[3])) {
+                        Ok(clean_audio_ok) => clean_audio_ok,
+                        Err(e) => return Err(format!("ERROR: clean_audio {}", e)),
+                };
+                raw_message.to_string()
 
-    Ok((clean_room_id, clean_room, clean_sender_id, clean_sender_name, clean_message))
+            }
+            _       => return Err(format!("ERROR: clean_trame unsupported media")),
+        };
+    Ok((clean_room_id, clean_room, clean_sender_id, clean_sender_name, clean_message, clean_media))
 }

@@ -16,6 +16,7 @@ pub struct Message{
     pub room_id: String,
     pub sender_id: String,
     pub sender_name: String,
+    pub media: String,
     pub m_message: String,
 }
 
@@ -49,7 +50,7 @@ impl Message{
                         Ok(model_ctrl) =>  model_ctrl,
                         Err(e) => format!("ERROR: unable to get model {}", e),
                     };
-                println!("Model de réponse: {}", answer_model);
+                //println!("Model de réponse: {}", answer_model);
                 // _récupère la réponse en fonction du model
                 let user_answer =
                     if answer_model == "sql" {
@@ -62,10 +63,18 @@ impl Message{
                             Err(e) => Err(format!("ERROR: unable to get sql anwser {}", e)),
                         }
                     } else {
-                        match get_answer(botbot_phrase, &self.sender_name, answer_model) {
-                            Ok(answer_ctrl) => Ok(format!("{}", answer_ctrl)),
-                            Err(e) => Err(format!("ERROR: unable to get anwser {}", e)),
-                       }
+                        match self.media.as_str() {
+                            "text" => {
+                                match get_answer(botbot_phrase, &self.sender_name, answer_model) {
+                                    Ok(answer_ctrl) => Ok(format!("{}", answer_ctrl)),
+                                    Err(e) => Err(format!("ERROR: unable to get anwser {}", e)),
+                                }
+                                },
+                            "audio" => {
+                                Ok(format!("AUDIO quand je saurai faire"))
+                                },
+                            _ => Err(format!("ERROR: unable to handle anwser")),
+                        }
                     };
                 user_answer
             };

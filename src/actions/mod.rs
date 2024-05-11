@@ -21,7 +21,7 @@ pub fn botbot_read(line_from_buffer: &String, connection_db: &Connection, user_l
         let raw_message_fist_char = raw_message.chars().nth(1).unwrap_or(' ');
         // _on clean les différentes parties de la trame
         if raw_message_fist_char !=  '>' {
-            let (clean_room_id, clean_room, clean_sender_id, clean_sender_name, clean_message) =
+            let (clean_room_id, clean_room, clean_sender_id, clean_sender_name, clean_message, clean_media)=
             match clean_trame(raw_data){
                 Ok(trame_ctrl) => {
                     trame_ctrl
@@ -32,7 +32,7 @@ pub fn botbot_read(line_from_buffer: &String, connection_db: &Connection, user_l
             };
             // _le buffer est pret à être converti en Message qui est une structure comportant: la
             // room d'origine et son id le sender d'origine et son id et enfin le texte
-            let mut incoming_message = Message{room_origin: clean_room, room_id: clean_room_id, sender_id: clean_sender_id, sender_name: clean_sender_name, m_message: clean_message};
+            let mut incoming_message = Message{room_origin: clean_room, room_id: clean_room_id, sender_id: clean_sender_id, sender_name: clean_sender_name, media: clean_media, m_message: clean_message};
             // _check si dans le Message il y a un trigger (botbot || #ticket)
             let trigger_answer_result =
                 if raw_message.contains("botbot") {

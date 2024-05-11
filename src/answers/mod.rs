@@ -12,7 +12,7 @@ pub fn get_answer(botbot_phrase: String, name: &String, role: String) -> Result<
     let f_dow=format!("{}",local.weekday().to_string());
     let arg_role=format!("{}:{}:{}:{}:{}",role,f_time,f_date,f_dow,name);
 
-    println!("role:{} - message {}", arg_role, botbot_phrase);
+    //println!("role:{} - message {}", arg_role, botbot_phrase);
 
     let aichat_command = Command::new("aichat")
        .arg("-r")
